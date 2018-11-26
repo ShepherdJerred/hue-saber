@@ -107,10 +107,10 @@ async function getLight (hueApi) {
 
 async function setColor (hueApi, light, fade, color) {
   let state;
-  state = hue.lightState.create().on().rgb(color.r, color.g, color.b).brightness(100).transition(100);
+  state = hue.lightState.create().on(true).rgb(color.r, color.g, color.b).brightness(100).transition(100);
   let result = await hueApi.setLightState(light, state);
   if (fade) {
-    state = hue.lightState.create().on().rgb(color.r, color.g, color.b).brightness(0).transition(1000);
+    state = hue.lightState.create().on(true).rgb(color.r, color.g, color.b).brightness(0).transition(1000);
     result = await hueApi.setLightState(light, state);
   }
   return result;
@@ -134,9 +134,9 @@ async function setBlank (hueApi, light) {
 }
 
 async function setBright (hueApi, light) {
-  let state = hue.lightState.create().on();
+  let state = hue.lightState.create().on(true);
   await hueApi.setLightState(light, state);
-  state = hue.lightState.create().scene('bright');
+  state = hue.lightState.create().on(true).scene('bright');
   await hueApi.setLightState(light, state);
 }
 
