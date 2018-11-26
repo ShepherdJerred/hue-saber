@@ -173,28 +173,28 @@ async function processBeatmapEvent (hueApi, light, data) {
 }
 
 async function processFinishedEvent (hueApi, light) {
-  await setBright(hueApi, light, true);
+  await setBright(hueApi, light.id, true);
 }
 
 async function processStartEvent (hueApi, light) {
-  await setBlank(hueApi, light);
+  await setBlank(hueApi, light.id);
 }
 
 async function processPauseEvent (hueApi, light) {
   colorBeforePause = lastColor;
-  await setBlank(hueApi, light);
+  await setBlank(hueApi, light.id);
 }
 
 async function processResumeEvent (hueApi, light) {
   switch (colorBeforePause) {
     case 'blue':
-      await setBlue(hueApi, light, true);
+      await setBlue(hueApi, light.id, true);
       break;
     case 'red':
-      await setRed(hueApi, light, true);
+      await setRed(hueApi, light.id, true);
       break;
     case 'blank':
-      await setBlank(hueApi, light);
+      await setBlank(hueApi, light.id);
       break;
   }
 }
