@@ -28,7 +28,7 @@ db.defaults({
   }
   if (hueApi) {
     const light = await getLight(hueApi);
-    listenForEvents(hueApi, light);
+    await listenForEvents(hueApi, light);
   } else {
     console.error('Hue API not created');
     process.exit(1);
@@ -109,11 +109,13 @@ async function setColor (hueApi, light, fade, color) {
   let state;
   if (fade) {
     state = hue.lightState.create().on().rgb(color.r, color.g, color.b).brightness(100).transition(100);
-    setBlank(hueApi, light, fade);
   } else {
-    state = hue.lightState.create().on().rgb(color.r, color.g, color.b).brightness(100).transitionInstant();
+    state = hue.lightState.create().on().rgb(color.r, color.g, color.b).brightness(100).transition(100);
   }
   const result = await hueApi.setLightState(light, state);
+  if (fade) {
+    await setBlank(hueApi, light, fade);
+  }
   // console.log(result);
   return result;
 }
@@ -134,7 +136,7 @@ async function setBlank (hueApi, light, fade) {
   if (fade) {
     state = hue.lightState.create().brightness(0).transition(100);
   } else {
-    state = hue.lightState.create().brightness(0).transitionInstant();
+    state = hue.lightState.create().brightness(0).transition(100);
   }
   await hueApi.setLightState(light, state);
 }
@@ -179,33 +181,33 @@ async function processBeatmapEvent (hueApi, light, data) {
 }
 
 async function processFinishedEvent (hueApi, light) {
-  setBright(hueApi, light);
+  await setBright(hueApi, light, true);
 }
 
 async function processStartEvent (hueApi, light) {
-  setBlank(hueApi, light);
+  await setBlank(hueApi, light, true);
 }
 
 async function processPauseEvent (hueApi, light) {
   colorBeforePause = lastColor;
-  setBlank(hueApi, light);
+  await setBlank(hueApi, light, true);
 }
 
 async function processResumeEvent (hueApi, light) {
   switch (colorBeforePause) {
     case 'blue':
-      setBlue(hueApi, light, true);
+      await setBlue(hueApi, light, true);
       break;
     case 'red':
-      setRed(hueApi, light, true);
+      await setRed(hueApi, light, true);
       break;
     case 'blank':
-      setBlank(hueApi, light);
+      await setBlank(hueApi, light, true);
       break;
   }
 }
 
-function listenForEvents (hueApi, light) {
+async function listenForEvents (hueApi, light) {
   const { SOCKET_URL } = process.env;
 
   console.log('Connecting to beatsaver-http-status');
@@ -213,7 +215,7 @@ function listenForEvents (hueApi, light) {
   const ws = new WebSocket(SOCKET_URL);
 
   ws.onmessage = data => {
-    // console.log(data);
+    console.log(data);
     data = JSON.parse(data.data);
     switch (data.event) {
       case 'hello':
