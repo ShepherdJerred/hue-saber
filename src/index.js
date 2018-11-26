@@ -134,7 +134,9 @@ async function setBlank (hueApi, light) {
 }
 
 async function setBright (hueApi, light) {
-  const state = hue.lightState.create().on().scene('bright');
+  let state = hue.lightState.create().on();
+  await hueApi.setLightState(light, state);
+  state = hue.lightState.create().scene('bright');
   await hueApi.setLightState(light, state);
 }
 
