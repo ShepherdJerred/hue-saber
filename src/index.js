@@ -134,11 +134,11 @@ async function setBlank (hueApi, light) {
 }
 
 async function setBright (hueApi, light) {
-  const state = hue.lightState.create().scene('bright');
+  const state = hue.lightState.create().on().scene('bright');
   await hueApi.setLightState(light, state);
 }
 
-function processHello (data) {
+function processHello () {
   console.log('Connected to beatsaver-http-status');
 }
 
