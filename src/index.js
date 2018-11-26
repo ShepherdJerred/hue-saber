@@ -105,39 +105,37 @@ async function getLight (hueApi) {
   }
 }
 
-async function setColor (hueApi, light, fade, color) {
+async function setColor (hueApi, lightId, fade, color) {
   let state;
   state = hue.lightState.create().on(true).rgb(color.r, color.g, color.b).brightness(100).transition(100);
-  let result = await hueApi.setLightState(light, state);
+  let result = await hueApi.setLightState(lightId, state);
   if (fade) {
     state = hue.lightState.create().on(true).rgb(color.r, color.g, color.b).brightness(0).transition(1000);
-    result = await hueApi.setLightState(light, state);
+    result = await hueApi.setLightState(lightId, state);
   }
   return result;
 }
 
-async function setRed (hueApi, light, fade) {
+async function setRed (hueApi, lightId, fade) {
   lastColor = 'red';
-  await setColor(hueApi, light, fade, { r: 255, g: 0, b: 0 });
+  await setColor(hueApi, lightId, fade, { r: 255, g: 0, b: 0 });
 }
 
-async function setBlue (hueApi, light, fade) {
+async function setBlue (hueApi, lightId, fade) {
   lastColor = 'blue';
-  await setColor(hueApi, light, fade, { r: 0, g: 0, b: 255 });
+  await setColor(hueApi, lightId, fade, { r: 0, g: 0, b: 255 });
 }
 
-async function setBlank (hueApi, light) {
+async function setBlank (hueApi, lightId) {
   lastColor = 'blank';
   let state;
   state = hue.lightState.create().brightness(0).off().transition(1000);
-  await hueApi.setLightState(light, state);
+  await hueApi.setLightState(lightId, state);
 }
 
-async function setBright (hueApi, light) {
-  let state = hue.lightState.create().on(true);
-  await hueApi.setLightState(light, state);
-  state = hue.lightState.create().on(true).scene('bright');
-  await hueApi.setLightState(light, state);
+async function setBright (hueApi, lightId) {
+  let state = hue.lightState.create().on(true).scene('bright');
+  await hueApi.setLightState(lightId, state);
 }
 
 function processHello () {
@@ -175,7 +173,7 @@ async function processBeatmapEvent (hueApi, light, data) {
 }
 
 async function processFinishedEvent (hueApi, light) {
-  await setBright(hueApi, light.id, true);
+  await setBright(hueApi, light.id);
 }
 
 async function processStartEvent (hueApi, light) {
@@ -211,28 +209,32 @@ async function listenForEvents (hueApi, light) {
   ws.onmessage = data => {
     // console.log(data);
     data = JSON.parse(data.data);
-    switch (data.event) {
-      case 'hello':
-        processHello(data);
-        break;
-      case 'beatmapEvent':
-        processBeatmapEvent(hueApi, light, data);
-        break;
-      case 'finished':
-        console.log('Finished song');
-        processFinishedEvent(hueApi, light);
-        break;
-      case 'songStart':
-        console.log('Starting song');
-        processStartEvent(hueApi, light);
-        break;
-      case 'pause':
-        console.log('Pausing song');
-        processPauseEvent(hueApi, light);
-        break;
-      case 'resume':
-        console.log('Resuming song');
-        processResumeEvent(hueApi, light);
+    try {
+      switch (data.event) {
+        case 'hello':
+          processHello(data);
+          break;
+        case 'beatmapEvent':
+          processBeatmapEvent(hueApi, light, data);
+          break;
+        case 'finished':
+          console.log('Finished song');
+          processFinishedEvent(hueApi, light);
+          break;
+        case 'songStart':
+          console.log('Starting song');
+          processStartEvent(hueApi, light);
+          break;
+        case 'pause':
+          console.log('Pausing song');
+          processPauseEvent(hueApi, light);
+          break;
+        case 'resume':
+          console.log('Resuming song');
+          processResumeEvent(hueApi, light);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 }
