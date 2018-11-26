@@ -14,8 +14,10 @@ This application was developed on a network with one Hue bridge and one color bu
 * I'm not sure what will happen if the bulb that is selected is not a color bulb
 
 # How to use huesaber
-1. Copy .env.sample to .env
-2. Edit the SOCKET_URL value in the .env file if needed
-3. Press the button on your Hue bridge
-4. Run the program with npm start or node dist/
-5. Play!
+1. Install dependencies with npm i
+2. Build the project with npm run build
+3. Copy .env.sample to .env
+4. Edit the SOCKET_URL value in the .env file if needed
+5. Press the button on your Hue bridge
+6. Run the program with npm run start
+7. Play!
