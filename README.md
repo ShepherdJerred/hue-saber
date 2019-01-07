@@ -4,7 +4,8 @@ Set Philips Hue lights based on Beat Saber events
 # Requirements
 * Node.js (developed with version 9.3.0)
 * Beat Saber with the [beatsaber-http-status](https://github.com/opl-/beatsaber-http-status/) plugin (Use the [plugin installer](https://www.modsaber.org/))
-* A Philips Hue bridge on the same network as the computer running Beat Saber with a color bulb
+* A Philips Hue bridge on the same network as the computer running Beat Saber
+* A color bulb set up with the Hue bridge
 
 # Caveats
 This application was developed on a network with one Hue bridge and one color bulb. Due to this, there are a few limitations.
@@ -21,7 +22,7 @@ This application was developed on a network with one Hue bridge and one color bu
 4. Edit the SOCKET_URL value in the .env file if needed (this is not required if you are running this program on the same computer that is running Beat Saber)
 5. Start Beat Saber
 6. Press the button on your Hue bridge
-7. Run the program with npm run start
+7. Run the program with `npm run start`
 
 # Important Notes
 * Beat Saber must be running with the http status plugin before starting the program, otherwise and error will occur
