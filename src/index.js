@@ -27,8 +27,8 @@ db.defaults({
     return;
   }
   if (hueApi) {
-    const light = await getLight(hueApi);
-    await listenForEvents(hueApi, light);
+    const lights = await getLights(hueApi);
+    await listenForEvents(hueApi, lights);
   } else {
     console.error('Hue API not created');
     process.exit(1);
@@ -93,13 +93,13 @@ async function connectToHue () {
   return hueApi;
 }
 
-async function getLight (hueApi) {
+async function getLights (hueApi) {
   try {
     const lights = await hueApi.lights();
     // console.log(lights);
     // await setRed(hueApi, lights.lights[0].id, false);
     // await setBlue(hueApi, lights.lights[0].id, false);
-    return lights.lights[0];
+    return lights;
   } catch (err) {
     console.error(err);
   }
@@ -199,7 +199,7 @@ async function processResumeEvent (hueApi, light) {
   }
 }
 
-async function listenForEvents (hueApi, light) {
+async function listenForEvents (hueApi, lights) {
   const { SOCKET_URL } = process.env;
 
   console.log('Connecting to beatsaver-http-status');
@@ -215,23 +215,33 @@ async function listenForEvents (hueApi, light) {
           processHello(data);
           break;
         case 'beatmapEvent':
-          processBeatmapEvent(hueApi, light, data);
+          lights.forEach(light => {
+            processBeatmapEvent(hueApi, light, data);
+          });
           break;
         case 'finished':
           console.log('Finished song');
-          processFinishedEvent(hueApi, light);
+          lights.forEach(light => {
+            processFinishedEvent(hueApi, light);
+          });
           break;
         case 'songStart':
           console.log('Starting song');
-          processStartEvent(hueApi, light);
+          lights.forEach(light => {
+            processStartEvent(hueApi, light);
+          });
           break;
         case 'pause':
           console.log('Pausing song');
-          processPauseEvent(hueApi, light);
+          lights.forEach(light => {
+            processPauseEvent(hueApi, light);
+          });
           break;
         case 'resume':
           console.log('Resuming song');
-          processResumeEvent(hueApi, light);
+          lights.forEach(light => {
+            processResumeEvent(hueApi, light);
+          });
       }
     } catch (err) {
       console.error(err);
