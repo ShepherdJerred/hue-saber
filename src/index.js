@@ -17,7 +17,7 @@ db.defaults({
   }
 });
 
-(async function main () {
+(async function main() {
   let hueApi;
   try {
     hueApi = await connectToHue();
@@ -35,15 +35,15 @@ db.defaults({
   }
 })();
 
-function saveUsername (username) {
+function saveUsername(username) {
   return db.set('hue.username', username).write();
 }
 
-function loadUsername () {
+function loadUsername() {
   return db.get('hue.username').value();
 }
 
-async function getUsername (host) {
+async function getUsername(host) {
   let username = loadUsername();
   if (!username) {
     try {
@@ -59,7 +59,7 @@ async function getUsername (host) {
   return username;
 }
 
-async function getBridge () {
+async function getBridge() {
   try {
     const bridges = await hue.nupnpSearch();
     console.log('Bridges found');
@@ -70,7 +70,7 @@ async function getBridge () {
   }
 }
 
-async function testBridgeConnection (hueApi) {
+async function testBridgeConnection(hueApi) {
   try {
     const config = await hueApi.config();
     console.log('Connected to bridge');
@@ -83,9 +83,9 @@ async function testBridgeConnection (hueApi) {
   }
 }
 
-async function connectToHue () {
+async function connectToHue() {
   const bridge = await getBridge();
-  const { ipaddress } = bridge;
+  const {ipaddress} = bridge;
   const username = await getUsername(ipaddress);
 
   const hueApi = new hue.HueApi(ipaddress, username);
@@ -93,7 +93,7 @@ async function connectToHue () {
   return hueApi;
 }
 
-async function getLights (hueApi) {
+async function getLights(hueApi) {
   try {
     const lights = await hueApi.lights();
     // console.log(lights);
@@ -105,46 +105,48 @@ async function getLights (hueApi) {
   }
 }
 
-async function setColor (hueApi, lightId, fade, color) {
+async function setColor(hueApi, lightId, fade, color) {
   let state;
-  state = hue.lightState.create().on(true).rgb(color.r, color.g, color.b).brightness(100).transition(100);
+  state = hue.lightState.create().on(true).rgb(color.r, color.g,
+      color.b).brightness(100).transition(100);
   let result = await hueApi.setLightState(lightId, state);
   if (fade) {
-    state = hue.lightState.create().on(true).rgb(color.r, color.g, color.b).brightness(0).transition(1000);
+    state = hue.lightState.create().on(true).rgb(color.r, color.g,
+        color.b).brightness(0).transition(1000);
     result = await hueApi.setLightState(lightId, state);
   }
   return result;
 }
 
-async function setRed (hueApi, lightId, fade) {
+async function setRed(hueApi, lightId, fade) {
   lastColor = 'red';
-  await setColor(hueApi, lightId, fade, { r: 255, g: 0, b: 0 });
+  await setColor(hueApi, lightId, fade, {r: 255, g: 0, b: 0});
 }
 
-async function setBlue (hueApi, lightId, fade) {
+async function setBlue(hueApi, lightId, fade) {
   lastColor = 'blue';
-  await setColor(hueApi, lightId, fade, { r: 0, g: 0, b: 255 });
+  await setColor(hueApi, lightId, fade, {r: 0, g: 0, b: 255});
 }
 
-async function setBlank (hueApi, lightId) {
+async function setBlank(hueApi, lightId) {
   lastColor = 'blank';
   let state;
   state = hue.lightState.create().brightness(0).off().transition(1000);
   await hueApi.setLightState(lightId, state);
 }
 
-async function setBright (hueApi, lightId) {
+async function setBright(hueApi, lightId) {
   let state = hue.lightState.create().on(true).scene('bright');
   await hueApi.setLightState(lightId, state);
 }
 
-function processHello () {
+function processHello() {
   console.log('Connected to beatsaver-http-status');
 }
 
-async function processBeatmapEvent (hueApi, light, data) {
+async function processBeatmapEvent(hueApi, light, data) {
   console.log(data);
-  const { type, value } = data.beatmapEvent;
+  const {type, value} = data.beatmapEvent;
   if (type < 5) {
     switch (value) {
       case 0:
@@ -172,20 +174,20 @@ async function processBeatmapEvent (hueApi, light, data) {
   }
 }
 
-async function processFinishedEvent (hueApi, light) {
+async function processFinishedEvent(hueApi, light) {
   await setBright(hueApi, light.id);
 }
 
-async function processStartEvent (hueApi, light) {
+async function processStartEvent(hueApi, light) {
   await setBlank(hueApi, light.id);
 }
 
-async function processPauseEvent (hueApi, light) {
+async function processPauseEvent(hueApi, light) {
   colorBeforePause = lastColor;
   await setBlank(hueApi, light.id);
 }
 
-async function processResumeEvent (hueApi, light) {
+async function processResumeEvent(hueApi, light) {
   switch (colorBeforePause) {
     case 'blue':
       await setBlue(hueApi, light.id, true);
@@ -199,8 +201,8 @@ async function processResumeEvent (hueApi, light) {
   }
 }
 
-async function listenForEvents (hueApi, lights) {
-  const { SOCKET_URL } = process.env;
+async function listenForEvents(hueApi, lights) {
+  const {SOCKET_URL} = process.env;
 
   console.log('Connecting to beatsaver-http-status');
 
@@ -215,33 +217,32 @@ async function listenForEvents (hueApi, lights) {
           processHello(data);
           break;
         case 'beatmapEvent':
-          lights.forEach(light => {
+          for (let light of lights) {
             processBeatmapEvent(hueApi, light, data);
-          });
+          }
           break;
         case 'finished':
           console.log('Finished song');
-          lights.forEach(light => {
+          for (let light of lights) {
             processFinishedEvent(hueApi, light);
-          });
-          break;
+          }
         case 'songStart':
           console.log('Starting song');
-          lights.forEach(light => {
+          for (let light of lights) {
             processStartEvent(hueApi, light);
-          });
+          }
           break;
         case 'pause':
           console.log('Pausing song');
-          lights.forEach(light => {
+          for (let light of lights) {
             processPauseEvent(hueApi, light);
-          });
+          }
           break;
         case 'resume':
           console.log('Resuming song');
-          lights.forEach(light => {
+          for (let light of lights) {
             processResumeEvent(hueApi, light);
-          });
+          }
       }
     } catch (err) {
       console.error(err);
