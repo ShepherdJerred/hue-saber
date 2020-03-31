@@ -1,7 +1,7 @@
 # huesaber
 Set Philips Hue lights based on Beat Saber events
 
-![A video of the game BeatSaber while this application changes the lights of a Hue bulb](https://im3.ezgif.com/tmp/ezgif-3-fd115f374a1b.gif)
+![A video of the game BeatSaber while this application changes the lights of a Hue bulb](http://i.imgur.com/LzcfVd5h.gif)
 
 # Requirements
 * Node.js (developed with version 9.3.0)
