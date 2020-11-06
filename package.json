@@ -1,0 +1,19 @@
+{
+  "name": "hue-saber",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shepherdjerred/hue-saber.git"
+  },
+  "author": "jerred shepherd and jake kellar",
+  "license": "gpl-3.0",
+  "bugs": {
+    "url": "https://github.com/shepherdjerred/hue-saber/issues"
+  },
+  "homepage": "https://github.com/shepherdjerred/hue-saber#readme"
+}
