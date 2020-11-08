@@ -2,8 +2,9 @@
   "name": "hue-saber",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "echo \"error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/shepherdjerred/hue-saber/issues"
   },
-  "homepage": "https://github.com/shepherdjerred/hue-saber#readme"
+  "homepage": "https://github.com/shepherdjerred/hue-saber#readme",
+  "dependencies": {
+    "node-hue-api": "^4.0.9",
+    "ws": "^7.3.1"
+  }
 }
